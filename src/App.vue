@@ -1,12 +1,11 @@
 <template>
-  <div id="app">
-    <Todos v-bind:todos="todos" v-on:del-todo="deleteTodo" />
-  </div>
+  <main id="app" class="container">
+    <Todos />
+  </main>
 </template>
 
 <script>
 import Todos from "./components/Todos.vue";
-
 export default {
   name: "App",
   components: {
@@ -14,30 +13,10 @@ export default {
   },
   data() {
     return {
-      todos: [
-        {
-          id: 1,
-          title: "todo one",
-          completed: false,
-        },
-        {
-          id: 2,
-          title: "todo two",
-          completed: true,
-        },
-        {
-          id: 3,
-          title: "todo three",
-          completed: false,
-        },
-      ],
+      msg: "Welcome to our Vue.js app",
     };
   },
-  methods: {
-    deleteTodo(id) {
-      this.todo = this.todo.filter((item) => item.id !== id);
-    },
-  },
+  methods: {},
 };
 </script>
 
@@ -46,5 +25,9 @@ export default {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+.container {
+  max-width: 600px;
+  margin: 0 auto;
 }
 </style>

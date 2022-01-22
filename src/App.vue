@@ -11,12 +11,6 @@ export default {
   components: {
     Todos,
   },
-  data() {
-    return {
-      msg: "Welcome to our Vue.js app",
-    };
-  },
-  methods: {},
 };
 </script>
 

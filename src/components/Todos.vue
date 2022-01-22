@@ -1,6 +1,6 @@
 <template>
   <section class="wrapper">
-    <h1>Todos component</h1>
+    <h1>Todo - List</h1>
     <input
       type="text"
       class="todo-input"
@@ -9,13 +9,31 @@
       @keyup.enter="addTodo"
     />
     <article>
-      <div v-for="(todo, index) in todos" :key="index + 1" class="todo-item">
-        <p :class="{ done: todo.completed }">
-          {{ todo.title }}
+      <div
+        v-for="{ title, id, completed } in todos"
+        :key="id"
+        class="todo-item"
+      >
+        <p :class="{ done: completed }" @click="toggleTodo()">
+          {{ title }}
         </p>
-        <button class="delete__btn" @click="deleteTodo(todo.id)">x</button>
+        <div class="btn__container">
+          <button class="btn delete" @click="deleteTodo(id)">x</button>
+          <button
+            class="btn edit"
+            @click="
+              {
+                editTodo($event, id);
+                edit();
+              }
+            "
+          >
+            edit
+          </button>
+        </div>
       </div>
     </article>
+    <button class="btn deleteAll" @click="deleteAll">delete all</button>
   </section>
 </template>
 
@@ -42,32 +60,63 @@ export default {
           completed: false,
         },
       ],
+      isEditing: false,
+      editId: null,
     };
   },
   methods: {
     addTodo() {
-      this.todos.push({
-        id: Math.floor(Math.random * 10000),
-        title: this.newTodo,
-        completed: false,
-      });
-      this.newTodo = "";
+      if (this.newTodo) {
+        const newTodo = {
+          id: Math.floor(Math.random() * 10000),
+          title: this.newTodo,
+          completed: false,
+        };
+        this.todos = [...this.todos, newTodo];
+        this.newTodo = "";
+      }
+      if (this.isEditing) {
+        this.todos = this.todos.map((item) =>
+          item.id === this.editId
+            ? {
+                id: Math.floor(Math.random() * 10000),
+                title: this.newTodo,
+                completed: false,
+              }
+            : item
+        );
+        this.isEditing = false;
+        this.newTodo = "";
+        this.editId = null;
+      }
     },
     deleteTodo(id) {
       this.todos = this.todos.filter((item) => item.id !== id);
     },
-  },
-  completed: {
-    makeId() {
-      return Math.floor(Math.random * 10000);
+    toggleTodo() {
+      this.todos.completed = !this.todos.completed;
+      console.log(this.todos.completed);
+    },
+    deleteAll() {
+      this.todos = [];
+    },
+    editTodo($event, id) {
+      this.isEditing = true;
+      this.editId = id;
+      this.newTodo = $event.target.value;
+      console.log(this.isEditing, this.editId, this.newTodo);
     },
   },
 };
 </script>
 
-<style lang="scss" scope>
+<style lang="scss">
 .wrapper {
   margin-top: 5rem;
+  h1 {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+  }
   .todo-input {
     width: 100%;
     padding: 10px;
@@ -83,7 +132,16 @@ export default {
   .todo-input::placeholder {
     font-size: 1rem;
   }
+  .btn {
+    border: none;
+    padding: 12px;
+    background: transparent;
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
   article {
+    position: relative;
     margin-top: 15px;
     display: flex;
     gap: 15px;
@@ -93,20 +151,34 @@ export default {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      .btn__container {
+        width: 12vw;
+        .delete {
+          &:hover {
+            color: red;
+          }
+        }
+        .edit {
+          font-size: 1.2rem;
+          &:hover {
+            color: green;
+          }
+        }
+      }
       .done {
         text-decoration: line-through;
       }
-      .delete__btn {
-        border: none;
-        padding: 12px;
-        background: transparent;
-        font-size: 1.4rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        &:hover {
-          color: red;
-        }
-      }
+    }
+  }
+  .deleteAll {
+    font-size: 1rem;
+    padding: 0.5rem;
+    text-transform: capitalize;
+    border: 1px solid red;
+    border-radius: 10px;
+    margin-top: 25px;
+    &:hover {
+      color: red;
     }
   }
 }

@@ -8,38 +8,25 @@
       v-model="newTodo"
       @keyup.enter="addTodo"
     />
-    <article>
-      <div
-        v-for="{ title, id, completed } in todos"
-        :key="id"
-        class="todo-item"
-      >
-        <p :class="{ done: completed }" @click="toggleTodo()">
-          {{ title }}
-        </p>
-        <div class="btn__container">
-          <button class="btn delete" @click="deleteTodo(id)">x</button>
-          <button
-            class="btn edit"
-            @click="
-              {
-                editTodo($event, id);
-                edit();
-              }
-            "
-          >
-            edit
-          </button>
-        </div>
-      </div>
-    </article>
-    <button class="btn deleteAll" @click="deleteAll">delete all</button>
+    <TodoList
+      :todos="todos"
+      :newTodo="newTodo"
+      :isEditing="isEditing"
+      :editId="editId"
+    />
+    <button v-if="hasTodos" class="btn deleteAll" @click="deleteAll">
+      delete all
+    </button>
   </section>
 </template>
 
 <script>
+import TodoList from "./TodoList.vue";
 export default {
   name: "todos",
+  components: {
+    TodoList,
+  },
   data() {
     return {
       newTodo: "",
@@ -65,46 +52,13 @@ export default {
     };
   },
   methods: {
-    addTodo() {
-      if (this.newTodo) {
-        const newTodo = {
-          id: Math.floor(Math.random() * 10000),
-          title: this.newTodo,
-          completed: false,
-        };
-        this.todos = [...this.todos, newTodo];
-        this.newTodo = "";
-      }
-      if (this.isEditing) {
-        this.todos = this.todos.map((item) =>
-          item.id === this.editId
-            ? {
-                id: Math.floor(Math.random() * 10000),
-                title: this.newTodo,
-                completed: false,
-              }
-            : item
-        );
-        this.isEditing = false;
-        this.newTodo = "";
-        this.editId = null;
-      }
-    },
-    deleteTodo(id) {
-      this.todos = this.todos.filter((item) => item.id !== id);
-    },
-    toggleTodo() {
-      this.todos.completed = !this.todos.completed;
-      console.log(this.todos.completed);
-    },
     deleteAll() {
       this.todos = [];
     },
-    editTodo($event, id) {
-      this.isEditing = true;
-      this.editId = id;
-      this.newTodo = $event.target.value;
-      console.log(this.isEditing, this.editId, this.newTodo);
+  },
+  computed: {
+    hasTodos() {
+      return this.todos.length > 0;
     },
   },
 };
@@ -165,9 +119,10 @@ export default {
           }
         }
       }
-      .done {
-        text-decoration: line-through;
-      }
+    }
+    .done {
+      text-decoration: line-through;
+      cursor: pointer;
     }
   }
   .deleteAll {

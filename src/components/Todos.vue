@@ -1,140 +1,97 @@
 <template>
-  <section class="wrapper">
-    <h1>Todo - List</h1>
+  <section>
+    <h1>Todo List</h1>
     <input
       type="text"
-      class="todo-input"
-      placeholder="what needs to be done"
-      v-model="newTodo"
+      placeholder="Add new Task"
+      v-model="title"
       @keyup.enter="addTodo"
+      autocomplete="off"
     />
     <TodoList
+      v-if="todos.length"
+      :title="title"
       :todos="todos"
-      :newTodo="newTodo"
       :isEditing="isEditing"
-      :editId="editId"
+      @delete-todo="deleteTodo"
+      @toggle-todo="toggleTodo"
+      @delete-all="deleteAll"
+      @edit-todo="editTodo"
     />
-    <button v-if="hasTodos" class="btn deleteAll" @click="deleteAll">
-      delete all
-    </button>
+    <h2 v-else>There is nothing ...</h2>
   </section>
 </template>
 
 <script>
 import TodoList from "./TodoList.vue";
 export default {
-  name: "todos",
+  name: "Todos",
   components: {
     TodoList,
   },
   data() {
     return {
-      newTodo: "",
+      title: "",
       todos: [
-        {
-          id: 1,
-          title: "Studying Vue.js",
-          completed: false,
-        },
-        {
-          id: 2,
-          title: "Talk with my dad",
-          completed: true,
-        },
-        {
-          id: 3,
-          title: "Go outside and meet friends",
-          completed: false,
-        },
+        { id: 1, title: "Talk with Daysha", completed: true },
+        { id: 2, title: "Wait Daysha", completed: false },
+        { id: 3, title: "eat dinner with Daysha", completed: false },
+        { id: 4, title: "have fun with Daysha", completed: true },
       ],
+      setTodoId: null,
       isEditing: false,
-      editId: null,
     };
   },
   methods: {
+    addTodo() {
+      if (this.title) {
+        const newTodo = {
+          id: Math.floor(Math.random() * 1000),
+          title: this.title,
+          completed: false,
+        };
+        this.todos = [...this.todos, newTodo];
+        this.title = "";
+        this.setTodoId = newTodo.id;
+        console.log(this.setTodoId);
+      }
+    },
+    deleteTodo(id) {
+      this.todos = this.todos.filter((item) => item.id !== id);
+    },
+    toggleTodo() {
+      this.completed = !this.completed;
+      console.log(this.completed);
+    },
     deleteAll() {
       this.todos = [];
     },
-  },
-  computed: {
-    hasTodos() {
-      return this.todos.length > 0;
+    editTodo(id) {
+      this.setTodoId = id;
+      this.isEditing = true;
     },
   },
 };
 </script>
 
 <style lang="scss">
-.wrapper {
-  margin-top: 5rem;
+section {
   h1 {
-    font-size: 2.2rem;
-    margin-bottom: 1rem;
+    margin-top: 3rem;
+    font-size: 2rem;
   }
-  .todo-input {
+  input {
     width: 100%;
+    margin-top: 2rem;
     padding: 10px;
-    font-size: 1rem;
-    margin-top: 1.2rem;
-    margin-bottom: 1rem;
-    border-radius: 5px;
-    border-color: #333;
-    &:focus {
-      outline: 0;
+    outline: none;
+    &::placeholder {
+      font-size: 1.1rem;
     }
   }
-  .todo-input::placeholder {
-    font-size: 1rem;
-  }
-  .btn {
-    border: none;
-    padding: 12px;
-    background: transparent;
-    font-size: 1.4rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  article {
-    position: relative;
-    margin-top: 15px;
-    display: flex;
-    gap: 15px;
-    flex-direction: column;
-    font-size: 1.2rem;
-    .todo-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      .btn__container {
-        width: 12vw;
-        .delete {
-          &:hover {
-            color: red;
-          }
-        }
-        .edit {
-          font-size: 1.2rem;
-          &:hover {
-            color: green;
-          }
-        }
-      }
-    }
-    .done {
-      text-decoration: line-through;
-      cursor: pointer;
-    }
-  }
-  .deleteAll {
-    font-size: 1rem;
-    padding: 0.5rem;
-    text-transform: capitalize;
-    border: 1px solid red;
-    border-radius: 10px;
-    margin-top: 25px;
-    &:hover {
-      color: red;
-    }
+  h2 {
+    margin-top: 5rem;
+    text-align: center;
   }
 }
 </style>

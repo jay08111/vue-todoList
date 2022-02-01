@@ -1,6 +1,4 @@
-<<<<<<< HEAD
-# todo-typescript
-=======
+
 # first-vue-app
 >>>>>>> cd53aba68faf4301a8fbd545b98e918686e8c1fc
 
